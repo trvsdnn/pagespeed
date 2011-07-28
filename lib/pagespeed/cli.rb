@@ -4,7 +4,7 @@ module PageSpeed
   class CLI
     
     class << self
-    
+      KEY_PATH = File.join(ENV['HOME'], '.pagespeed_api_key')
       BANNER = <<-USAGE
       Usage:
         pagespeed google.com
@@ -44,10 +44,8 @@ module PageSpeed
       # get the api key from ~/.pagespeed_api_key
       # if we can't find it, show a user how to get one
       def get_api_key
-        key_path = File.join(ENV['HOME'], '.pagespeed_api_key')
-        
-        if File.exist?(key_path)
-          File.read(key_path).gsub(/\s/, '')
+        if File.exist?(KEY_PATH)
+          File.read(KEY_PATH).gsub(/\s/, '')
         else
           instructions = <<-INSTRUCTIONS
           \033[31mLooks like you don't have an API key\033[0m
@@ -61,6 +59,11 @@ module PageSpeed
         end
       end
       
+      # save the api key at ~/.pagespeed_api_key
+      def save_api_key(key)
+        File.open(KEY_PATH, 'w') { |f| f.write(key) }
+      end
+      
       # parse the options and make the pagespeed request
       def run!(argv)
         set_options
@@ -69,6 +72,8 @@ module PageSpeed
           api_key = get_api_key
           request = PageSpeed::Request.new(argv[0], api_key)
           request.pagespeed
+        elsif argv.size == 2 && argv[0] == 'add-key'
+          save_api_key(argv[1])
         else
           print_usage_and_exit!
         end

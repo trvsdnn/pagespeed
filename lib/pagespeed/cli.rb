@@ -65,7 +65,6 @@ module PageSpeed
       def run!(argv)
         set_options
         
-        puts argv.inspect
         if argv.size == 1
           api_key = get_api_key
           request = PageSpeed::Request.new(argv[0], api_key)

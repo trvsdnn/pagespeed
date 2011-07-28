@@ -1,4 +1,3 @@
-require 'json'
 require 'net/https'
 require 'uri'
 
@@ -23,13 +22,14 @@ module PageSpeed
       response = http.request(request)
       
       if response.code.to_i == 200
-        PageSpeed::Parser.parse(response)
+        PageSpeed::Parser.parse(response.body)
       else
         status_error(response)
       end
       
     rescue Exception => e
       puts e.message
+      puts e.backtrace.join("\n")
       puts "\033[31mUh oh, didn't work. Maybe the host is down or the url is wrong... or perhaps google is down :("
       exit
     end
@@ -41,14 +41,9 @@ module PageSpeed
     
     private
     
-    def parse_response(response)
-      puts JSON.parse(response.body).inspect
-    end
-    
     def build_request_uri
       uri = URI.parse(PAGESPEED_API_URL)
       uri.query = "url=#{@url}&key=#{@api_key}"
-      puts "#{uri.scheme}://#{uri.host}#{uri.request_uri}"
       uri
     end
       

@@ -47,15 +47,16 @@ module PageSpeed
         key_path = File.join(ENV['HOME'], '.pagespeed_api_key')
         
         if File.exist?(key_path)
-          File.read(kay_path)
+          File.read(key_path).gsub(/\s/, '')
         else
-          puts <<-INSTRUCTIONS
+          instructions = <<-INSTRUCTIONS
           \033[31mLooks like you don't have an API key\033[0m
-            - to acquire a key, visit the Google APIs Console. here: `https://code.google.com/apis/console'
+            - visit the Google APIs Console. here: `https://code.google.com/apis/console'
             - in the Services pane, activate the Page Speed Online API
             - go to the API Access pane. The key is in the section titled "Simple API Access."
             - paste the key into a file at ~/.pagespeed_api_key or add it with the pagespeed command: `pagespeed add-key YOUR_KEY'
           INSTRUCTIONS
+          puts instructions.gsub(/^\s{10}/, '')
           exit
         end
       end
@@ -64,8 +65,11 @@ module PageSpeed
       def run!(argv)
         set_options
         
+        puts argv.inspect
         if argv.size == 1
-          PageSpeed::Request.pagespeed(argv[0])
+          api_key = get_api_key
+          request = PageSpeed::Request.new(argv[0], api_key)
+          request.pagespeed
         else
           print_usage_and_exit!
         end

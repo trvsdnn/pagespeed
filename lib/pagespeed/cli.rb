@@ -7,15 +7,18 @@ module PageSpeed
       KEY_PATH = File.join(ENV['HOME'], '.pagespeed_api_key')
       BANNER = <<-USAGE
       Usage:
-        pagespeed google.com
-
+        pagespeed -u google.com
+        pagespeed -u google.com -s mobile
       Description:
-        pagespeed pulls in results for a given website from the google pagespeed api
-
+        Runs Page Speed analysis on the page at the specified URL, and returns a Page Speed score, a list of suggestions to make that page faster, and other information.
       USAGE
 
       # parse and set the options
       def set_options
+        # set default options
+        options = {}
+        options['strategy'] = 'desktop'
+
         @opts = OptionParser.new do |opts|
           opts.banner = BANNER.gsub(/^\s{4}/, '')
 
@@ -30,9 +33,23 @@ module PageSpeed
             puts opts
             exit
           end
+
+          opts.on( '-u', '--url URL', 'The URL of the page for which the PageSpeed Insights API should generate results.') do |u|
+            options['url'] = u
+          end
+
+          opts.on( '-s', '--strategy [STRATEGY]', 'The strategy to use when analyzing the page. Valid values are \'desktop\' and \'mobile\'.') do |s|
+            options['strategy'] = s
+          end
         end
 
-        @opts.parse!
+        begin
+          @opts.parse!
+        rescue OptionParser::InvalidOption, OptionParser::MissingArgument
+          print_usage_and_exit!
+        end
+
+        options
       end
 
       # print out the options banner and exit
@@ -66,18 +83,15 @@ module PageSpeed
 
       # parse the options and make the pagespeed request
       def run!(argv)
-        set_options
+        opts = set_options
 
-        if argv.size == 1
-          api_key = get_api_key
-          request = PageSpeed::Request.new(argv[0], api_key)
-          request.pagespeed
-        elsif argv.size == 2 && argv[0] == 'add-key'
+        if argv.size == 2 && argv[0] == 'add-key'
           save_api_key(argv[1])
         else
-          print_usage_and_exit!
+          api_key = get_api_key
+          request = PageSpeed::Request.new(opts['url'], api_key, opts['strategy'])
+          request.pagespeed
         end
-
       end
 
     end

@@ -25,7 +25,7 @@ module PageSpeed
           opts.separator ''
 
           opts.on('-v', '--version', 'Show the pagespeed version and exit') do
-            puts "dsync v#{PageSpeed::VERSION}"
+            puts "pagespeed v#{PageSpeed::VERSION}"
             exit
           end
 

@@ -7,9 +7,10 @@ module PageSpeed
 
     attr_accessor :url, :api_key
 
-    def initialize(url, api_key)
+    def initialize(url, api_key, strategy)
       @url = url =~ /^https?:\/\// ? url : ('http://' + url )
       @api_key = api_key
+      @strategy = strategy
       @uri = build_request_uri
     end
 
@@ -43,7 +44,7 @@ module PageSpeed
 
     def build_request_uri
       uri = URI.parse(PAGESPEED_API_URL)
-      uri.query = "url=#{@url}&key=#{@api_key}"
+      uri.query = "url=#{@url}&strategy=#{@strategy}&key=#{@api_key}"
       uri
     end
 

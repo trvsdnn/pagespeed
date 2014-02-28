@@ -9,6 +9,7 @@ module PageSpeed
         result = JSON.parse(result)
         code   = result['responseCode']
         total_score = result['score']
+        strategy = result['request']['strategy']
 
         fail(code, result['title']) unless code == 200
 
@@ -19,7 +20,7 @@ module PageSpeed
         end
 
         colorize(total_score)
-        puts " \nTotal Score: #{total_score}"
+        puts " \nTotal Score: #{total_score}/100 (#{strategy})"
         decolorize
       end
 

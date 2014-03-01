@@ -7,14 +7,14 @@ module PageSpeed
       KEY_PATH = File.join(ENV['HOME'], '.pagespeed_api_key')
       BANNER = <<-USAGE
       Usage:
-        pagespeed -u google.com
-        pagespeed -u google.com -s mobile
+        pagespeed google.com
+        pagespeed google.com -s mobile
       Description:
         Runs Page Speed analysis on the page at the specified URL, and returns a Page Speed score, a list of suggestions to make that page faster, and other information.
       USAGE
 
       # parse and set the options
-      def set_options
+      def set_options(args)
         # set default options
         options = {}
         options['strategy'] = 'desktop'
@@ -34,21 +34,12 @@ module PageSpeed
             exit
           end
 
-          opts.on( '-u', '--url URL', 'The URL of the page for which the PageSpeed Insights API should generate results.') do |u|
-            options['url'] = u
-          end
-
           opts.on( '-s', '--strategy [STRATEGY]', 'The strategy to use when analyzing the page. Valid values are \'desktop\' and \'mobile\'.') do |s|
             options['strategy'] = s
           end
         end
 
-        begin
-          @opts.parse!
-        rescue OptionParser::InvalidOption, OptionParser::MissingArgument
-          print_usage_and_exit!
-        end
-
+        @opts.parse!(args)
         options
       end
 
@@ -83,14 +74,16 @@ module PageSpeed
 
       # parse the options and make the pagespeed request
       def run!(argv)
-        opts = set_options
+        opts = set_options(argv)
 
-        if argv.size == 2 && argv[0] == 'add-key'
+        if argv.size == 1
+          api_key = get_api_key
+          request = PageSpeed::Request.new(argv[0], api_key, opts['strategy'])
+          request.pagespeed
+        elsif argv.size == 2 && argv[0] == 'add-key'
           save_api_key(argv[1])
         else
-          api_key = get_api_key
-          request = PageSpeed::Request.new(opts['url'], api_key, opts['strategy'])
-          request.pagespeed
+          print_usage_and_exit!
         end
       end
 

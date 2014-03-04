@@ -35,6 +35,9 @@ module PageSpeed
           end
 
           opts.on( '-s', '--strategy [STRATEGY]', 'The strategy to use when analyzing the page. Valid values are \'desktop\' and \'mobile\'.') do |s|
+            if s == nil
+              print_usage_and_exit!
+            end
             options['strategy'] = s
           end
         end

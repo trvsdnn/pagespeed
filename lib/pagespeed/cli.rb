@@ -5,13 +5,6 @@ module PageSpeed
 
     class << self
       KEY_PATH = File.join(ENV['HOME'], '.pagespeed_api_key')
-      BANNER = <<-USAGE
-      Usage:
-        pagespeed google.com
-        pagespeed google.com -s mobile
-      Description:
-        Runs Page Speed analysis on the page at the specified URL, and returns a Page Speed score, a list of suggestions to make that page faster, and other information.
-      USAGE
 
       # parse and set the options
       def set_options(args)
@@ -20,9 +13,16 @@ module PageSpeed
         options['strategy'] = 'desktop'
 
         @opts = OptionParser.new do |opts|
-          opts.banner = BANNER.gsub(/^\s{4}/, '')
+          opts.banner = "Usage: pagespeed [url] [options]"
 
           opts.separator ''
+
+          opts.on( '-s', '--strategy [STRATEGY]', 'The strategy to use when analyzing the page. Valid values are \'desktop\' and \'mobile\'.') do |s|
+            if s == nil
+              print_usage_and_exit!
+            end
+            options['strategy'] = s
+          end
 
           opts.on('-v', '--version', 'Show the pagespeed version and exit') do
             puts "pagespeed v#{PageSpeed::VERSION}"
@@ -34,12 +34,6 @@ module PageSpeed
             exit
           end
 
-          opts.on( '-s', '--strategy [STRATEGY]', 'The strategy to use when analyzing the page. Valid values are \'desktop\' and \'mobile\'.') do |s|
-            if s == nil
-              print_usage_and_exit!
-            end
-            options['strategy'] = s
-          end
         end
 
         @opts.parse!(args)

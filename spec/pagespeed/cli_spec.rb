@@ -1,4 +1,4 @@
-require 'pagespeed/cli'
+require 'pagespeed'
 
 describe PageSpeed::CLI do
   subject(:cli) { described_class }

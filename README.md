@@ -1,34 +1,39 @@
-a ruby wrapper around the google pagespeed api
+A Ruby library for the Google PageSpeed API.
 
 ## Usage
 
-	> pagespeed add-key YOUR_API_KEY
-	> pagespeed blahed.com
-	
-	 100 - Make landing page redirects cacheable
-	 100 - Put CSS in the document head
-	 100 - Avoid CSS @import
-	  95 - Specify a character set
-	 100 - Serve scaled images
-	  97 - Minify JavaScript
-	   0 - Leverage browser caching
-	 100 - Optimize the order of styles and scripts
-	  95 - Defer parsing of JavaScript
-	 100 - Prefer asynchronous resources
-	 100 - Minimize redirects
-	  48 - Minify CSS
-	 100 - Inline Small CSS
-	 100 - Combine images into CSS sprites
-	 100 - Specify a cache validator
-	  50 - Inline Small JavaScript
-	   0 - Specify a Vary: Accept-Encoding header
-	 100 - Serve resources from a consistent URL
-	 100 - Remove query strings from static resources
-	 100 - Specify image dimensions
-	 100 - Minimize request size
-	 100 - Avoid bad requests
-	 100 - Optimize images
-	  58 - Minify HTML
+### Command Line
 
-	Total Score: 77
-	
+```bash
+$ pagespeed add-key YOUR_API_KEY
+$ pagespeed -u blahed.com
+  - Avoid landing page redirects
+  - Enable compression
+  - Leverage browser caching
+  - Reduce server response time
+  - Minify CSS
+  - Minify HTML
+  - Minify JavaScript
+  - Eliminate render-blocking JavaScript and CSS in above-the-fold content
+  - Optimize images
+  - Prioritize visible content
+
+Total Score: 87/100 (desktop)
+```
+
+### Ruby API
+
+```ruby
+require 'pagespeed'
+
+request = PageSpeed::Request.new("google.com", 'YOUR_API_KEY', 'desktop')
+request.pagespeed
+```
+
+## Contributers
+
+- [blahed][1]
+- [danriti][2]
+
+[1]: https://github.com/blahed
+[2]: https://github.com/danriti
